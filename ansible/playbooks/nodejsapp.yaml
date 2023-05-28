@@ -1,0 +1,42 @@
+- name: Install Dependencies and Deploy Node.js Application
+  hosts: ec2_instances
+  become: true
+  
+  collections:
+    - community.general
+    
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+    - name: Install Node.js and npm
+      apt:
+        name: ['nodejs', 'npm']
+        state: present
+
+    - name: Install build-essential package
+      apt:
+        name: build-essential
+        state: present
+
+    - name: Clone Git repository
+      git:
+        repo: "{{ git_repo }}"
+        dest: app
+        version: master  # or specify a branch/tag/commit
+
+    - name: Install Node.js dependencies
+      community.general.npm:
+        path: "app/{{ app_path }}"
+        
+    - name: Build React application
+      command: npm run build
+      args:
+        chdir: "app/{{ app_path }}"
+        
+    - name: Start Node.js application
+      shell: "nohup npm run start &"
+      args:
+        chdir: "app/{{ app_path }}"
+      async: 0
+      poll: 0

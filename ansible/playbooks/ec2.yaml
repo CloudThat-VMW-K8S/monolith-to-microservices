@@ -1,0 +1,29 @@
+---
+- name: Provision EC2 instance
+  hosts: localhost
+  gather_facts: False
+  tasks:
+  - name: Create EC2 instance
+    amazon.aws.ec2_instance:
+      name: "{{ instance_name }}"
+      key_name: "{{ key_pair }}"
+      instance_type: "{{ instance_type }}"
+      image_id: "{{ ami_id }}"
+      region: "{{ aws_region }}"
+      security_group: "{{ security_group }}"
+      vpc_subnet_id: "{{ subnet_id }}"
+      network:
+        assign_public_ip: true
+      wait: yes
+    register: ec2_instance
+  
+  - name: display ec2InstanceOutput
+    debug:
+      var: ec2_instance
+
+  - name: Add EC2 instance to AWX inventory
+    add_host:
+      name: "{{ ec2_instance.instances[0].private_ip_address }}"
+      groups: "ec2_instances"
+      ansible_ssh_private_key_file: "{{ private_key_file }}"
+      ansible_user: "{{ ansible_user }}"
