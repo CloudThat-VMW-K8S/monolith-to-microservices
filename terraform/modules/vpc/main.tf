@@ -8,7 +8,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "public_subnet" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = element(var.public_subnet_cidrs, count.index)
-  enable_public_ip = true
+  map_public_ip_on_launch = true
   tags = {
     Name = element(var.subnet_names, count.index)
   }
