@@ -33,7 +33,7 @@ if [ ! -z "$CLOUD_SHELL" ]; then
 fi
 
 printf "Installing monolith dependencies...\n"
-cd ./monolith
+cd ./app/monolith
 npm install
 printf "Completed.\n\n"
 
